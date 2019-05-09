@@ -52,7 +52,7 @@
         <el-button
           size="mini"
           @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-           <el-button plain type="small">添加商品</el-button>
+           <el-button plain type="small" @click="handleEdit1(scope.$index, scope.row)">添加商品</el-button>
         <el-button
           size="mini"
           type="danger"
@@ -60,17 +60,17 @@
       </template>
     </el-table-column>
   </el-table>
-  <div class="block">
-<el-pagination
-@size-change="handleSizeChange"
-@current-change="handleCurrentChange"
-:current-page.sync="currentPage1"
-:page-size="100"
-background
-layout="total,prev, pager, next"
-:total="458"
-></el-pagination>
-</div>
+ <div class="block">
+      <span class="demonstration">显示总数</span>
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page.sync="currentPage1"
+        :page-size="20"
+        layout="total, prev, pager, next"
+        :total="1029">
+      </el-pagination>
+    </div>
 </div>
 </template>
 <script>
@@ -81,7 +81,6 @@ return {
 tableData: [
 
 ],
-currentRow: null,
 list: "",
 currentPage1: 1
 }; 
@@ -90,23 +89,32 @@ components: {
 },
 created() {
 Axios.get("https://elm.cangdu.org/shopping/restaurants?latitude=39.90469&longitude=116.407173&offset=0&limit=20").then((item)=>{
-console.log(item.data)
+// console.log(item.data)
 this.tableData=item.data
 })
 
 },
-beforeCreate(){
-Axios.get("https://elm.cangdu.org/shopping/restaurants?latitude=39.90469&longitude=116.407173&offset=0&limit=20").then((item) => {
-console.log(item);
-});
-},
+// beforeCreate(){
+// Axios.get("https://elm.cangdu.org/shopping/restaurants?latitude=39.90469&longitude=116.407173&offset=0&limit=20").then((item) => {
+// console.log(item);
+// });
+// },
 methods: {
-handleSizeChange(val) {
-console.log(`每页 ${val} 条`);
-},
-handleCurrentChange(val) {
-console.log(`当前页: ${val}`);
-}
+  handleEdit1(index,row){
+      console.log(row)
+      this.$router.push({name:'addGoods',query:{id:this.tableData[index].id},})
+
+  },
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+    },
+    handleCurrentChange(val) {
+    this.num=(val-1)*20
+    Axios.get("https://elm.cangdu.org/shopping/restaurants?latitude=39.90469&longitude=116.407173&offset=0"+this.num+"&limit=20").then((item) => {
+      console.log(item);
+      this.tableData = item.data
+    });
+    },
 }
 };
 </script>

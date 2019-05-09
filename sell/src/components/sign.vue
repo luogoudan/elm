@@ -1,10 +1,12 @@
 <template>
-<div class="div1">
+<div class="div1  animated fadeInDown">
 <p>elem后台管理系统</p >
 <div class="div1-1">
 <input type="text" v-model="name" placeholder="请输入姓名"><br>
 <input type="password" v-model="pass" placeholder="请输入密码" class="div1-input"><br>
-<button @click="Login" >登录</button>
+<el-button type="primary"  @click="Login" v-if="isShow">登录</el-button>
+<button @click="Login" v-else disabled>登录</button>
+
 <p>温馨提示:</p >
 <span>未登录过的新用户，自动注册</span><br>
 <span>注册过的用户可凭账号密码登录</span>
@@ -12,25 +14,30 @@
 </div>
 </template>
 <script>
-import Axios from "axios";
 export default {
   data() {
     return {
       name: "",
-      pass: ""
+      pass: "",
+      isShow: true
     };
   },
   methods: {
     Login() {
-      console.log(this.name,this.pass)
-      Axios.post("https://elm.cangdu.org/admin/login",{user_name:this.name,password:this.pass}).then(res => {
-        console.log(res.data);
-        // if(this.date.status==1){
-            this.$router.push({name:'detail'})
-        // }else{
-            // console.log(this.data.message)
-        // }
-        
+      this.isShow = false;
+      console.log(this.name, this.pass);
+      this.axios.post("https://elm.cangdu.org/admin/login", {
+        user_name: this.name,
+        password: this.pass
+      }).then(res => {
+        console.log(res);
+        if (res.data.status == 1) {
+          this.$router.push({ name: "detail" });
+          this.isShow = true;
+        } else {
+          console.log(res.data.message);
+          //  this.isShow==true
+        }
       });
     }
   }
@@ -66,8 +73,12 @@ export default {
 .div1-input {
   margin-top: 20px;
 }
-.div1-1 button {
+.div2-input {
   width: 90%;
+  margin-top: 20px;
+}
+.div1-1 button {
+  width: 100%;
   background: #20a0ff;
   height: 35px;
   border: none;
@@ -82,5 +93,8 @@ export default {
   padding: 0;
   color: red;
   font-size: 13px;
+}
+.el-form-item__content{
+  margin-left:0px;
 }
 </style>

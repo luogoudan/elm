@@ -2,34 +2,27 @@
 <div class="box2">
     <div class="login">首页/数据管理/用户列表</div>
   <el-table
+  :d="a" :dd="aa" :ddd="aaa"
     :data="tableData"
+   @expand-change='toggleRowSelection'
     style="width: 100%">
     <el-table-column type="expand">
       <template scope="props">
         <el-form label-position="left" inline class="demo-table-expand">
+          <el-form-item label="用户名">
+            <span>{{aa.username}}</span>
+          </el-form-item>
           <el-form-item label="店铺名称">
             <span>{{ props.row.name }}</span>
           </el-form-item>
-          <el-form-item label="店铺地址">
-            <span>{{ props.row.address }}</span>
-          </el-form-item>
-          <el-form-item label="店铺介绍">
-            <span>{{ props.row.name }}</span>
+          <el-form-item label="收货地址">
+            <span>{{ aaa.address }}</span>
           </el-form-item>
           <el-form-item label="店铺 ID">
-            <span>{{ props.row.id }}</span>
+            <span>{{a.id}}</span>
           </el-form-item>
-          <el-form-item label="联系电话">
-            <span>{{ props.row.phone }}</span>
-          </el-form-item>
-          <el-form-item label="评分">
-            <span>{{ props.row.rating }}</span>
-          </el-form-item>
-          <el-form-item label="销售量">
-            <span>{{ props.row.rating_count }}</span>
-          </el-form-item>
-          <el-form-item label="分类">
-            <span>{{ props.row.category }}</span>
+          <el-form-item label="店铺地址">
+            <span>{{ a.address }}</span>
           </el-form-item>
         </el-form>
       </template>
@@ -40,25 +33,25 @@
     </el-table-column>
     <el-table-column
       label="总价格"
-      prop="price"
+      prop="total_amount"
       >
     </el-table-column>
      <el-table-column
       label="订单状态"
-      prop="status">
+      prop="status_bar.title">
     </el-table-column>
   </el-table>
   <div class="block">
-<el-pagination
-@size-change="handleSizeChange"
-@current-change="handleCurrentChange"
-:current-page.sync="currentPage1"
-:page-size="100"
-background
-layout="total,prev, pager, next"
-:total="458"
-></el-pagination>
-</div>
+      <span class="demonstration">显示总数</span>
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page.sync="currentPage1"
+        :page-size="20"
+        layout="total, prev, pager, next"
+        :total="9574">
+      </el-pagination>
+    </div>
 </div>
 </template>
 <script>
@@ -66,12 +59,15 @@ import Axios from 'axios'
 export default {
     data() {
 return {
-tableData: [
-
-],
-currentRow: null,
+tableData: [],
 list: "",
-currentPage1: 1
+currentPage1: 1,
+aa:[],
+a:[],
+d:[],
+dd:[],
+aaa:[],
+ddd:[]
 }; 
 },
 components: {
@@ -89,11 +85,38 @@ console.log(item);
 });
 },
 methods: {
+  toggleRowSelection(row){
+      Axios.get('https://elm.cangdu.org/v1/user/'+row.restaurant_id).then((ee)=>{
+       if (ee) {
+         console.log(ee)
+          this.aa = ee.data
+          console.log(this.aa);
+        }
+      }),
+        Axios.get('https://elm.cangdu.org/shopping/restaurant/'+row.restaurant_id).then((e)=>{
+       if (e) {
+         console.log(e)
+          this.a = e.data
+          console.log(this.a);
+        }
+      }),
+      Axios.get('https://elm.cangdu.org/v1/addresse/'+row.restaurant_id).then((eee)=>{
+       if (eee) {
+         console.log(eee)
+          this.aaa = eee.data
+          console.log(this.aaa);
+        }
+      })
+  },
 handleSizeChange(val) {
 console.log(`每页 ${val} 条`);
 },
 handleCurrentChange(val) {
-console.log(`当前页: ${val}`);
+  this.num=(val-1)*20
+  Axios.get("https://elm.cangdu.org/bos/orders?offset=0"+this.num+"&limit=20&restaurant_id=undefined").then((item)=>{
+console.log(item.data)
+this.tableData=item.data
+})
 }
 }
 };
@@ -104,6 +127,9 @@ background: white;
 width: 100%;
 height: 800px;
 overflow-y: scroll;
+padding:0;
+margin:0;    
+box-sizing: border-box;
 }
   .login{
                width:100%;
@@ -113,7 +139,7 @@ overflow-y: scroll;
                font-size:15px;
                padding-left:15px;
                color: lightgrey;
-               margin-bottom:15px;
+               /* margin-bottom:15px; */
            }
           
   .demo-table-expand {

@@ -13,10 +13,15 @@ export default {
 <style>
 
     
-body,html{
+body,html,#app{
 width: 100%;
 height: 100%;
 background: #324057;
+}
+.v-modal{
+  width:0;
+  height:0;
+  z-index: 0;
 }
 *{
 margin: 0;
